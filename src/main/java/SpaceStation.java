@@ -14,18 +14,18 @@ public class SpaceStation implements CommandExecutor {
         _media = media;
         _name = name;
         _knownCommands = new ArrayList<>();
-        _knownCommands.add("gettime");
-        _knownCommands.add("takephoto");
+        _knownCommands.add("gettime (alias: gt)");
+        _knownCommands.add("takephoto (alias: tp)");
     }
 
     @Override
     public String execCommand(String cmd) {
-        if(cmd.equals("gt")) {
+        if(cmd.equals("gt") || cmd.equals("gettime")) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
             return dtf.format(now);
         }
-        if(cmd.equals("tp")) {
+        if(cmd.equals("tp") || cmd.equals("takephoto")) {
             return "                                                                                                                                                      \n" +
                     "                                                                                                                                                      \n" +
                     "                                                  ..,;;:::cccc:,'..                                                                                   \n" +
