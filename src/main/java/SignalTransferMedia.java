@@ -1,11 +1,12 @@
 public class SignalTransferMedia {
 
-    private double _delay;
+    private double delay;
+
     public SignalTransferMedia(double signalTransferSpeed, double distance) {
-        _delay = distance / signalTransferSpeed;
+        delay = distance / signalTransferSpeed;
     }
 
     public int getDelayMs() {
-        return (int)Math.round(_delay * 1000);
+        return (int) Math.round(delay * 1000);
     }
 }

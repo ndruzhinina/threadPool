@@ -6,27 +6,27 @@ import java.util.concurrent.BlockingQueue;
 
 public class Transmitter implements ChannelListener {
 
-    private BlockingQueue _commandQueue = null;
-    private List<Channel> _channels = new ArrayList<>();
-    private boolean _isStopped = false;
-    private CommandExecutor _station;
-    private PrintStream _outputStream;
-    private int _signalDelay;
+    private BlockingQueue commandQueue = null;
+    private List<Channel> channels = new ArrayList<>();
+    private boolean isStopped = false;
+    private CommandExecutor station;
+    private PrintStream outputStream;
+    private int signalDelay;
     private final int NUM_CHANNELS = 3;
-    private Object _syncObj = new Object();
+    private Object syncObj = new Object();
 
-    public Transmitter(int commandQueueCapacity, PrintStream outputStream){
-        _outputStream = outputStream;
-        _commandQueue = new ArrayBlockingQueue(commandQueueCapacity);
+    public Transmitter(int commandQueueCapacity, PrintStream outputStream) {
+        this.outputStream = outputStream;
+        commandQueue = new ArrayBlockingQueue(commandQueueCapacity);
 
-        for(int i = 0; i < NUM_CHANNELS; i++){
-            _channels.add(new Channel(_commandQueue, "Channel-" + i));
+        for (int i = 0; i < NUM_CHANNELS; i++) {
+            channels.add(new Channel(commandQueue, "Channel-" + i));
         }
     }
 
     public void on() {
-        _outputStream.println("Activating " + NUM_CHANNELS + " channels...");
-        for(Channel channel: _channels) {
+        outputStream.println("Activating " + NUM_CHANNELS + " channels...");
+        for (Channel channel : channels) {
             Thread thread = new Thread(channel);
             thread.setName(channel.getName());
             thread.start();
@@ -34,47 +34,47 @@ public class Transmitter implements ChannelListener {
     }
 
     public void connect(CommandExecutor station) {
-        _station = station;
-        _signalDelay = _station.getSignalDelay();
-        for(Channel channel : _channels){
-            channel.setSignalDelay(_signalDelay);
+        this.station = station;
+        signalDelay = this.station.getSignalDelay();
+        for (Channel channel : channels) {
+            channel.setSignalDelay(signalDelay);
             channel.setResponseListener(this);
-            channel.setRequestListener(_station);
+            channel.setRequestListener(this.station);
         }
 
-        _outputStream.println("Connected to: " + _station.getName());
-        _outputStream.println("Delay: " + _signalDelay + "ms");
-        _outputStream.println("Known commands:");
-        _outputStream.println(String.join(", ", _station.getKnownCommandList()));
+        outputStream.println("Connected to: " + this.station.getName());
+        outputStream.println("Delay: " + signalDelay + "ms");
+        outputStream.println("Known commands:");
+        outputStream.println(String.join(", ", this.station.getKnownCommandList()));
     }
 
     public void disconnect() {
-        _station = null;
-        _signalDelay = 0;
-        _outputStream.println("Disconnected");
+        station = null;
+        signalDelay = 0;
+        outputStream.println("Disconnected");
     }
 
-    public synchronized void sendCommand(String command) throws Exception{
-        if(this._isStopped)
+    public synchronized void sendCommand(String command) throws Exception {
+        if (this.isStopped)
             throw new IllegalStateException("The transmitter is off");
-        this._commandQueue.offer(command);
+        this.commandQueue.offer(command);
     }
 
     private void print(String msg) {
-        String message = "Channel #" + Thread.currentThread().getName()  + " >>> " + msg;
-        _outputStream.println(message);
+        String message = "Channel #" + Thread.currentThread().getName() + " >>> " + msg;
+        outputStream.println(message);
     }
 
     public synchronized void off() {
-        _outputStream.println("Deactivating channels");
-        this._isStopped = true;
-        for(Channel channel : _channels){
+        outputStream.println("Deactivating channels");
+        this.isStopped = true;
+        for (Channel channel : channels) {
             channel.off();
         }
     }
 
     public synchronized void waitAll() {
-        while(this._commandQueue.size() > 0) {
+        while (this.commandQueue.size() > 0) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {

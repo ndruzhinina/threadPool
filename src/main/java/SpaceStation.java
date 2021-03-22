@@ -6,26 +6,26 @@ import java.util.List;
 
 public class SpaceStation implements CommandExecutor {
 
-    private SignalTransferMedia _media;
-    private List<String> _knownCommands;
-    private String _name;
+    private SignalTransferMedia media;
+    private List<String> knownCommands;
+    private String name;
 
     public SpaceStation(String name, SignalTransferMedia media) {
-        _media = media;
-        _name = name;
-        _knownCommands = new ArrayList<>();
-        _knownCommands.add("gettime (alias: gt)");
-        _knownCommands.add("takephoto (alias: tp)");
+        this.media = media;
+        this.name = name;
+        knownCommands = new ArrayList<>();
+        knownCommands.add("gettime (alias: gt)");
+        knownCommands.add("takephoto (alias: tp)");
     }
 
     @Override
     public String execCommand(String cmd) {
-        if(cmd.equals("gt") || cmd.equals("gettime")) {
+        if (cmd.equals("gt") || cmd.equals("gettime")) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
             return dtf.format(now);
         }
-        if(cmd.equals("tp") || cmd.equals("takephoto")) {
+        if (cmd.equals("tp") || cmd.equals("takephoto")) {
             return "                                                                                                                                                      \n" +
                     "                                                                                                                                                      \n" +
                     "                                                  ..,;;:::cccc:,'..                                                                                   \n" +
@@ -79,16 +79,16 @@ public class SpaceStation implements CommandExecutor {
 
     @Override
     public int getSignalDelay() {
-        return _media.getDelayMs();
+        return media.getDelayMs();
     }
 
     @Override
     public List<String> getKnownCommandList() {
-        return _knownCommands;
+        return knownCommands;
     }
 
     @Override
     public String getName() {
-        return _name;
+        return name;
     }
 }
